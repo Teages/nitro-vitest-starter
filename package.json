@@ -6,12 +6,13 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:app": "vitest --run --config vitest-client.config.ts",
-    "test:server": "vitest --run --config vitest.config.ts",
+    "test:app": "vitest --run --coverage --config vitest-client.config.ts",
+    "test:server": "vitest --run --coverage --config vitest.config.ts",
     "test": "pnpm run test:server && pnpm run test:app"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
+    "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^10.0.3",
     "nitro": "^3.0.260311-beta",
     "vite": "^8.0.1",
