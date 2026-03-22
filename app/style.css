@@ -1,0 +1,22 @@
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#counter-btn {
+  font-size: 1.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background-color: #646cff;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+#counter-btn:hover {
+  background-color: #535bf2;
+}
