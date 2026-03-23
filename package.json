@@ -6,9 +6,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:app": "vitest --run --coverage --project app",
-    "test:server": "vitest --run --coverage --project server",
-    "test": "vitest --run"
+    "test": "vitest --run --coverage"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",

@@ -1,14 +1,15 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
 import { nitroTestPlugin } from './test/plugin'
+import viteConfig from './vite.config'
 
-export default defineConfig({
+export default mergeConfig(viteConfig, defineConfig({
+  plugins: [
+    nitroTestPlugin(),
+  ],
   test: {
     projects: [
       {
-        extends: './vite.config.ts',
-        plugins: [
-          nitroTestPlugin(),
-        ],
+        extends: true,
         test: {
           name: 'server',
           include: [
@@ -21,7 +22,7 @@ export default defineConfig({
         },
       },
       {
-        extends: './vite.config.ts',
+        extends: true,
         test: {
           name: 'app',
           include: [
@@ -34,4 +35,4 @@ export default defineConfig({
       },
     ],
   },
-})
+}))
