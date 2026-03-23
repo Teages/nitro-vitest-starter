@@ -1,26 +1,40 @@
 import { createCounter } from './counter'
 import './style.css'
 
-const app = document.querySelector<HTMLDivElement>('#app')
+function App() {
+  let loading = true
 
-if (app) {
   // Create counter instance
   const counter = createCounter()
 
   // Create button element
   const button = document.createElement('button')
   button.id = 'counter-btn'
-  button.textContent = `Count is ${counter.getCount()}`
+  button.textContent = `Loading...`
+  void counter.getCount().then((count) => {
+    loading = false
+    button.textContent = `Count is ${count}`
+  })
 
   // Subscribe to count changes
   counter.onCountChanged((count) => {
+    if (loading) {
+      loading = false
+    }
     button.textContent = `Count is ${count}`
   })
 
   // Handle button click
   button.addEventListener('click', () => {
-    counter.increment()
+    void counter.increment()
   })
 
-  app.appendChild(button)
+  return {
+    mount(target: HTMLElement) {
+      target.appendChild(button)
+    },
+  }
 }
+
+const app = document.querySelector<HTMLDivElement>('#app')!
+App().mount(app)

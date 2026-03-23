@@ -1,35 +1,50 @@
-import { defineEventHandler, defineLazyEventHandler } from 'nitro/h3'
+import { defineHandler } from 'nitro/h3'
+import { useStorage } from 'nitro/storage'
 
-// Stateful is also possible, the tests in different files will be run in isolated environments
-// but it would be really dangerous if you use a non-inmemory storage, like a remote database
-// I suggest you to use a in-memory storage for testing
-export default defineLazyEventHandler(() => {
-  let count = 0
-
-  return defineEventHandler(() => {
-    count += 1
-    return { count }
-  })
+// POST /api/count - Increment count by 1
+export default defineHandler(async () => {
+  const storage = useStorage('count')
+  const currentCount = await storage.getItem<number>('value') ?? 0
+  const newCount = currentCount + 1
+  await storage.setItem('value', newCount)
+  return { count: newCount }
 })
 
 if (import.meta.vitest) {
-  const { describe, it, expect } = import.meta.vitest
+  const { describe, it, expect, beforeEach } = import.meta.vitest
 
   describe('post /api/count', async () => {
     const { serverFetch } = await import('nitro/app')
+    const storage = useStorage('count')
 
-    it('should return the incremented count', async () => {
+    beforeEach(async () => {
+      // Reset count before each test
+      await storage.removeItem('value')
+    })
+
+    it('should increment count from 0 to 1', async () => {
+      const response = await serverFetch('/api/count', { method: 'POST' })
+      expect(response.status).toBe(200)
+
+      const data: unknown = await response.json()
+      expect(data).toEqual({ count: 1 })
+    })
+
+    it('should increment count multiple times', async () => {
       const response1 = await serverFetch('/api/count', { method: 'POST' })
       expect(response1.status).toBe(200)
-
       const data1: unknown = await response1.json()
       expect(data1).toEqual({ count: 1 })
 
       const response2 = await serverFetch('/api/count', { method: 'POST' })
       expect(response2.status).toBe(200)
-
       const data2: unknown = await response2.json()
       expect(data2).toEqual({ count: 2 })
+
+      const response3 = await serverFetch('/api/count', { method: 'POST' })
+      expect(response3.status).toBe(200)
+      const data3: unknown = await response3.json()
+      expect(data3).toEqual({ count: 3 })
     })
   })
 }
