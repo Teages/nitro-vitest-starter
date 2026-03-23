@@ -1,14 +1,37 @@
-import { mergeConfig } from 'vitest/config'
-import { defineConfig } from './test/config'
-import viteConfig from './vite.config.ts'
+import { defineConfig } from 'vitest/config'
+import { nitroTestPlugin } from './test/plugin'
 
-export default mergeConfig(viteConfig, defineConfig({
+export default defineConfig({
   test: {
-    include: [
-      'test/server/**/*.test.ts',
-    ],
-    includeSource: [
-      'server/**/*.ts',
+    projects: [
+      {
+        extends: './vite.config.ts',
+        plugins: [
+          nitroTestPlugin(),
+        ],
+        test: {
+          name: 'server',
+          include: [
+            'test/server/**/*.test.ts',
+          ],
+          includeSource: [
+            'server/**/*.ts',
+          ],
+          environment: './test/env.ts',
+        },
+      },
+      {
+        extends: './vite.config.ts',
+        test: {
+          name: 'app',
+          include: [
+            'test/app/**/*.test.ts',
+          ],
+          includeSource: [
+            'app/**/*.ts',
+          ],
+        },
+      },
     ],
   },
-}))
+})
