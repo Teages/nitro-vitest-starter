@@ -68,4 +68,13 @@ describe('createCounter', () => {
     await counter.setCount(100)
     expect(callback).toHaveBeenCalledWith(100)
   })
+
+  it('should throw error when getCount fails without initial value', async () => {
+    const mockFetch = createMockFetch([
+      { ok: false, status: 500, json: async () => ({ error: 'Server error' }) },
+    ])
+    const counter = createCounter(undefined, mockFetch)
+
+    await expect(counter.getCount()).rejects.toThrow('Failed to get count: 500')
+  })
 })
