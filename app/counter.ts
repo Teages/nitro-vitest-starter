@@ -12,14 +12,14 @@ export interface Counter {
 /**
  * Create a counter that syncs with the server API
  * @param initialValue - Initial value (fetched from server if not provided)
- * @param fetchFn - Fetch function for testing (defaults to global fetch)
+ * @param fetch - Fetch function for testing (defaults to global fetch)
  */
-export function createCounter(initialValue?: number, fetchFn: typeof fetch = fetch): Counter {
+export function createCounter(initialValue?: number, fetch: typeof globalThis.fetch = globalThis.fetch): Counter {
   let changeCallback: CountChangedCallback | null = null
   let localCount: number | null = initialValue ?? null
 
   const fetchCount = async (): Promise<number> => {
-    const response = await fetchFn('/api/count', { method: 'GET' })
+    const response = await fetch('/api/count', { method: 'GET' })
     if (!response.ok) {
       throw new Error(`Failed to get count: ${response.status}`)
     }
@@ -36,7 +36,7 @@ export function createCounter(initialValue?: number, fetchFn: typeof fetch = fet
   }
 
   const setCount = async (value: number): Promise<void> => {
-    const response = await fetchFn('/api/count', {
+    const response = await fetch('/api/count', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ count: value }),
@@ -54,7 +54,7 @@ export function createCounter(initialValue?: number, fetchFn: typeof fetch = fet
   }
 
   const increment = async (): Promise<void> => {
-    const response = await fetchFn('/api/count', { method: 'POST' })
+    const response = await fetch('/api/count', { method: 'POST' })
     if (!response.ok) {
       throw new Error(`Failed to increment count: ${response.status}`)
     }

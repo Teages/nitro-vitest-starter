@@ -2,25 +2,27 @@ import { createCounter } from './counter'
 import './style.css'
 
 function App() {
-  let loading = true
-
   // Create counter instance
   const counter = createCounter()
 
-  // Create button element
-  const button = document.createElement('button')
-  button.id = 'counter-btn'
-  button.textContent = `Loading...`
-  void counter.getCount().then((count) => {
-    loading = false
-    button.textContent = `Count is ${count}`
-  })
+  // Find existing button (SSR rendered) or create new one
+  let button = document.querySelector<HTMLButtonElement>('#counter-btn')
+
+  if (!button) {
+    button = document.createElement('button')
+    button.id = 'counter-btn'
+    button.textContent = 'Loading...'
+    const app = document.querySelector<HTMLDivElement>('#app')
+    app?.appendChild(button)
+  }
 
   // Subscribe to count changes
   counter.onCountChanged((count) => {
-    if (loading) {
-      loading = false
-    }
+    button.textContent = `Count is ${count}`
+  })
+
+  // Fetch initial count to sync with server state
+  void counter.getCount().then((count) => {
     button.textContent = `Count is ${count}`
   })
 
@@ -31,10 +33,15 @@ function App() {
 
   return {
     mount(target: HTMLElement) {
-      target.appendChild(button)
+      if (!document.querySelector('#counter-btn')) {
+        target.appendChild(button)
+      }
     },
   }
 }
 
-const app = document.querySelector<HTMLDivElement>('#app')!
-App().mount(app)
+// Only mount if #app exists and button not already in DOM
+const app = document.querySelector<HTMLDivElement>('#app')
+if (app) {
+  App()
+}
